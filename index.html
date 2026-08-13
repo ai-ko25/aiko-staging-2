@@ -1336,6 +1336,95 @@
 
 <script>
 /* ================================================================
+   VOICE. Aiko's recorded lines, if a voice pack is present.
+
+   Everything here degrades to silence. A missing folder, a blocked
+   autoplay, an offline phone: the game plays exactly as it did before,
+   because the captions were always the real channel and the audio is
+   an enhancement on top. Nothing waits on a clip loading.
+   ================================================================ */
+(() => {
+  "use strict";
+  const BASE = "assets/voice/en/";
+  const KEY  = "nightshift.voiceOff";
+
+  let el = null;          // the single player: one voice, never two at once
+  let unlocked = false;   // browsers block sound until the child taps something
+  let missing = false;    // set once, if the pack is not deployed at all
+  let queue = [];
+
+  const off = () => { try { return localStorage.getItem(KEY) === "1"; } catch(e){ return false; } };
+  const setOff = v => {
+    try { localStorage.setItem(KEY, v ? "1" : "0"); } catch(e){}
+    if (v) stop();
+  };
+
+  function player(){
+    if (!el){
+      el = new Audio();
+      el.preload = "none";
+      // one clip finishing is what pulls the next off the queue
+      el.addEventListener("ended", next);
+      el.addEventListener("error", () => { queue = []; });
+    }
+    return el;
+  }
+
+  function stop(){
+    queue = [];
+    if (el){ try { el.pause(); el.currentTime = 0; } catch(e){} }
+  }
+
+  function next(){
+    if (!queue.length) return;
+    const clip = queue.shift();
+    const a = player();
+    a.src = BASE + clip + ".mp3";
+    const p = a.play();
+    // a rejected play is normal (autoplay policy, a missing file). Drop the
+    // rest of the queue rather than stacking promises nobody will hear.
+    if (p && p.catch) p.catch(() => { queue = []; });
+  }
+
+  /* play(clip) or play(["a","b"]) to chain. Later calls interrupt earlier
+     ones: if Aiko has something newer to say, the stale line is not worth
+     making a child sit through. */
+  function play(clip){
+    if (!clip || off() || missing || !unlocked) return false;
+    queue = Array.isArray(clip) ? clip.slice() : [clip];
+    if (el) { try { el.pause(); } catch(e){} }
+    next();
+    return true;
+  }
+
+  // pick one at random, but never the same one twice running
+  let lastPick = "";
+  function pick(list){
+    const opts = list.filter(c => c !== lastPick);
+    const c = (opts.length ? opts : list)[Math.floor(Math.random() * (opts.length || list.length))];
+    lastPick = c;
+    return play(c);
+  }
+
+  function unlock(){
+    if (unlocked) return;
+    unlocked = true;
+    // confirm the pack exists before anything tries to use it, so a build
+    // deployed without assets/ stays silent instead of firing 404s per line
+    fetch(BASE + "welcome-hello.mp3", { method: "HEAD" })
+      .then(r => { if (!r.ok) missing = true; })
+      .catch(() => { missing = true; });
+  }
+
+  // any first gesture counts, not just the welcome button
+  ["pointerdown", "keydown"].forEach(ev =>
+    document.addEventListener(ev, unlock, { once: true, capture: true }));
+
+  window.Voice = { play, pick, stop, unlock, setOff, isOff: off,
+                   get absent(){ return missing; } };
+})();
+
+/* ================================================================
    AIKO, the companion. One shared character across all three games:
    presents the tutorials, nudges when somebody stalls, reacts to
    wrong taps, and names the safety rule in one short line at the
@@ -1394,14 +1483,17 @@ const AK_EYES  = '<path d="M327,242 L326,243 L324,243 L323,244 L322,244 L320,246
        mood      expression to wear while speaking
        ms        how long the bubble stays
        priority  bypasses the every-5-seconds throttle
+       clip      recorded line to play alongside the bubble, if a pack exists
      The throttle is the whole reason a mascot stays tolerable: routine
-     chatter gets dropped, only earned lines interrupt. */
+     chatter gets dropped, only earned lines interrupt. A dropped line must
+     drop its audio too, which is why the clip plays after the throttle. */
   function say(text, opts){
     opts = opts || {};
     if (quiet()) return false;
     const now = (typeof performance !== "undefined" ? performance.now() : Date.now());
     if (!opts.priority && now - lastAt < 5200) return false;
     lastAt = now;
+    if (opts.clip && window.Voice) window.Voice.play(opts.clip);
     const w = $("aiko"), b = $("akBubble");
     if (!w || !b) return false;
     b.innerHTML = text;
@@ -1442,6 +1534,9 @@ const AK_EYES  = '<path d="M327,242 L326,243 L324,243 L323,244 L322,244 L320,246
   function paint(){
     $("tutStage").innerHTML = steps[at].art;
     $("tutCap").innerHTML = steps[at].cap;
+    // the panel is on screen for as long as the child wants, so this is the
+    // one place a full sentence of audio is never a race against the game
+    if (steps[at].clip && window.Voice) window.Voice.play(steps[at].clip);
     if (window.Aiko)
       $("tutAiko").innerHTML = window.Aiko.svg(at === steps.length - 1 ? "pleased" : "watch", 78, "tut" + at);
     $("tutDots").innerHTML = steps.map((_, i) =>
@@ -1453,6 +1548,9 @@ const AK_EYES  = '<path d="M327,242 L326,243 L324,243 L323,244 L322,244 L320,246
     // only count it as seen once it has actually been shown through, so a
     // reload or a stray click can never silently burn somebody's tutorial
     if (key) mark(key);
+    // skipping should silence Aiko mid-sentence, not leave a voice explaining
+    // a panel the child has already walked away from
+    if (window.Voice) window.Voice.stop();
     $("tut").hidden = true;
     const fn = done; done = null; key = null;
     if (fn) fn();
@@ -1666,7 +1764,13 @@ const AK_EYES  = '<path d="M327,242 L326,243 L324,243 L323,244 L322,244 L320,246
     focusLeft:3, slowUntil:0, won:false, limbo:0,
     lastLane:-1, t:0, raf:0, prev:0,
     best: store.get("best", 0),
-    muted: store.get("muted", false)
+    // a mute chosen on a previous visit has to survive the reload, or the
+    // classroom that muted thirty tablets yesterday has to do it again today
+    muted: (() => {
+      const m = store.get("muted", false);
+      if (window.Voice) window.Voice.setOff(m);
+      return m;
+    })()
   };
 
   const SLOW = () => (window.SafePace && window.SafePace.slow()) ? 1.45 : 1;
@@ -1739,8 +1843,17 @@ const AK_EYES  = '<path d="M327,242 L326,243 L324,243 L323,244 L322,244 L320,246
     $("muteBtn").textContent = G.muted ? "Muted" : "Sound";
   }
 
-  // a nudge if they freeze, common when the first threat looks harmless
-  let nsIdle = 0;
+  // a nudge if they freeze, common when the first threat looks harmless.
+  // Caption and clip are one unit here: the recording says exactly what the
+  // bubble says, so nothing is lost with the sound off and nothing contradicts
+  // it with the sound on.
+  const NUDGES = [
+    { clip:"nudge-1", cap:"Still there?" },
+    { clip:"nudge-2", cap:"Want a hand, or are you thinking?" },
+    { clip:"nudge-3", cap:"Take your time. I'm not going anywhere." },
+    { clip:"nudge-4", cap:"Try tapping one and see what happens." }
+  ];
+  let nsIdle = 0, nsStalls = 0;
   function armNsIdle(){
     clearTimeout(nsIdle);
     if (G.mode !== "play") return;
@@ -1748,8 +1861,17 @@ const AK_EYES  = '<path d="M327,242 L326,243 L324,243 L323,244 L322,244 L320,246
       if (G.mode !== "play") return;
       const live = G.cards.filter(c => c.live);
       const threat = live.find(c => c.data.kind === "threat");
-      if (threat) nsHint("Read what it's <b>asking you to do</b>. That one wants something, tap it.");
-      else if (live.length) nsHint("These are your actual friends. <b>Let them through.</b>");
+      // First stall gets the specific hint, which is worth more than any
+      // recorded line. Keep stalling and Aiko stops instructing and just
+      // keeps you company, which is when the recorded nudges fit.
+      nsStalls++;
+      if (nsStalls < 2){
+        if (threat) nsHint("Read what it's <b>asking you to do</b>. That one wants something, tap it.");
+        else if (live.length) nsHint("These are your actual friends. <b>Let them through.</b>");
+      } else {
+        const n = NUDGES[Math.floor(Math.random() * NUDGES.length)];
+        nsHint(n.cap, { clip: n.clip, priority: true, ms: 3200 });
+      }
       armNsIdle();
     }, 11000);
   }
@@ -1990,7 +2112,7 @@ const AK_EYES  = '<path d="M327,242 L326,243 L324,243 L323,244 L322,244 L320,246
   function resolve(c, how){
     // only a genuine tap counts as activity -- a card landing by itself is
     // exactly when somebody sitting there doing nothing needs a nudge
-    if (how === "clicked") armNsIdle();
+    if (how === "clicked"){ nsStalls = 0; armNsIdle(); }
     const threat = c.data.kind === "threat";
     c.live = false;
     G.total++;
@@ -2168,14 +2290,14 @@ const AK_EYES  = '<path d="M327,242 L326,243 L324,243 L323,244 L322,244 L320,246
   }
 
   const TUTORIAL = [
-    { cap:"Messages fall towards your inbox. <b>Tap the sketchy ones</b> to zap them before they land.",
+    { clip:"ns-tut-1", cap:"Messages fall towards your inbox. <b>Tap the sketchy ones</b> to zap them before they land.",
       art:'<div class="tu-card zap" style="left:24px">@free_gemz_now<br>FREE GEMS click here</div>' +
           '<span class="tu-tap" style="left:88px;top:66px"></span>' +
           '<div class="tu-line"></div><div class="tu-lbl">your inbox</div>' },
-    { cap:"Your real friends fall too. <b>Leave them alone</b> and let them land.",
+    { clip:"ns-tut-2", cap:"Your real friends fall too. <b>Leave them alone</b> and let them land.",
       art:'<div class="tu-card good fall" style="left:24px">@maya_builds<br>gg that round was insane</div>' +
           '<div class="tu-line"></div><div class="tu-lbl">your inbox</div>' },
-    { cap:"Scary words are not the clue. <b>Watch what the message asks you to do.</b>",
+    { clip:"ns-tut-3", cap:"Scary words are not the clue. <b>Watch what the message asks you to do.</b>",
       art:'<div class="tu-post" style="top:44px">&#8220;someone sent me a weird <span class="tu-hot">link</span> earlier. i didnt click it&#8221;</div>' +
           '<div class="tu-found" style="bottom:34px">This one is fine, it isn\'t asking you for anything.</div>' }
   ];
@@ -2317,6 +2439,9 @@ const AK_EYES  = '<path d="M327,242 L326,243 L324,243 L323,244 L322,244 L320,246
         '<button class="go ghost" id="btn2">Start the night over</button>'
       : '<button class="go" id="btn">Run it again \u2192</button>';
 
+    // the lesson line, spoken as the end screen lands. The same point
+    // is written out on the screen underneath it.
+    if (window.Voice) window.Voice.play("ns-takeaway");
     show(
       '<div class="eyebrow">' + (won ? "All six shifts survived"
         : (G.shields<=0 ? "Firewall down" : "Your friends stopped messaging")) + '</div>' +
@@ -2405,7 +2530,14 @@ const AK_EYES  = '<path d="M327,242 L326,243 L324,243 L323,244 L322,244 L320,246
   $("focusBtn").onclick = useFocus;
   $("helpBtn").onclick = helpNS;
   $("pauseBtn").onclick = togglePause;
-  $("muteBtn").onclick = () => { G.muted = !G.muted; store.set("muted", G.muted); drawHud(); };
+  // one switch for both channels. A child muting the game and then being
+  // talked at by Aiko anyway is not a mute button, it is a betrayal.
+  $("muteBtn").onclick = () => {
+    G.muted = !G.muted;
+    store.set("muted", G.muted);
+    if (window.Voice) window.Voice.setOff(G.muted);
+    drawHud();
+  };
 
   addEventListener("keydown", e => {
     if ($("app").hidden) return;
@@ -2716,15 +2848,15 @@ const AK_EYES  = '<path d="M327,242 L326,243 L324,243 L323,244 L322,244 L320,246
   const hide = () => { $("fpVeil").hidden = true; if (window.Aiko) window.Aiko.show(true); };
 
   const FP_TUTORIAL = [
-    { cap:"You're a stranger reading somebody's posts. <b>Tap anything that tells you something</b>, in the words or in the picture.",
+    { clip:"fp-tut-1", cap:"You're a stranger reading somebody's posts. <b>Tap anything that tells you something</b>, in the words or in the picture.",
       art:'<div class="tu-post">new kit!! cannot wait for the first match<br>' +
           '<span class="tu-hot">OAKFIELD JUNIORS FC</span> on the badge</div>' +
           '<span class="tu-tap" style="left:52%;top:56px"></span>' },
-    { cap:"On their own they're nothing. <b>Together</b> they add up to something real.",
+    { clip:"fp-tut-2", cap:"On their own they're nothing. <b>Together</b> they add up to something real.",
       art:'<div class="tu-post">&#8220;<span class="tu-hot">3 mins from school</span> to my door&#8221;<br>' +
           '&#8220;<span class="tu-hot">MILL LANE</span>&#8221; on the street sign</div>' +
           '<div class="tu-found">Now they know roughly where you live.</div>' },
-    { cap:"Then you go back and fix it. <b>Deleting everything is not the goal</b>, you score on how many posts you keep.",
+    { clip:"fp-tut-3", cap:"Then you go back and fix it. <b>Deleting everything is not the goal</b>, you score on how many posts you keep.",
       art:'<div class="tu-post">&#8220;<span style="color:#BFF5E1">walked home</span>&#8221; &#183; badge <span style="color:#BFF5E1">[cropped]</span><br>' +
           '<span style="color:var(--dim)">same post, still up, nothing to find</span></div>' +
           '<div class="tu-found" style="background:rgba(95,227,176,.14);border-left-color:var(--mint);color:#BFF5E1">One small change each. Five of six posts stay.</div>' }
@@ -2778,6 +2910,9 @@ const AK_EYES  = '<path d="M327,242 L326,243 L324,243 L323,244 L322,244 L320,246
                : kept === 4 ? "Careful"
                : "Safe, but you nuked it";
 
+    // the lesson line, spoken as the end screen lands. The same point
+    // is written out on the screen underneath it.
+    if (window.Voice) window.Voice.play("fp-takeaway");
     show(
       '<div class="eyebrow">Profile cleaned up</div>' +
       '<h2>' + (perfect ? "That's the whole trick." : "All closed, but you lost posts.") + '</h2>' +
@@ -3028,7 +3163,12 @@ const AK_EYES  = '<path d="M327,242 L326,243 L324,243 L323,244 L322,244 L320,246
       setTimeout(() => { if (art) art.setAttribute("class", "aiko m-watch"); }, 1400);
     }, 650);
   }
-  $("welGo").onclick = () => showOnly("hub");
+  $("welGo").onclick = () => {
+    // the first tap is also what unlocks audio, so the greeting is the
+    // earliest moment Aiko is allowed to make a sound at all
+    if (window.Voice){ window.Voice.unlock(); window.Voice.play(["welcome-hello", "welcome-invite"]); }
+    showOnly("hub");
+  };
 
   window.SafeMode = { toHub, showOnly, paintHub, welcome };
   paintHub();
@@ -3555,10 +3695,10 @@ const AK_EYES  = '<path d="M327,242 L326,243 L324,243 L323,244 L322,244 L320,246
     '</div>';
 
   const TUTORIAL = [
-    { cap:"A machine is cracking your vault. <b>The stronger your password, the slower it goes.</b>",
+    { clip:"pw-tut-1", cap:"A machine is cracking your vault. <b>The stronger your password, the slower it goes.</b>",
       art:'<div class="tu-bar"><i></i></div>' +
           '<div class="tu-lbl" style="top:48px;bottom:auto">machine breaking in</div>' },
-    { cap:"<b>Tap a word</b> to add it. Random words slow it right down, things about you barely help at all.",
+    { clip:"pw-tut-2", cap:"<b>Tap a word</b> to add it. Random words slow it right down, things about you barely help at all.",
       art:'<span class="tu-chip" style="left:16px;top:52px">otter</span>' +
           '<span class="tu-chip" style="left:96px;top:52px">lantern</span>' +
           '<span class="tu-chip weak" style="left:186px;top:52px">Biscuit</span>' +
@@ -3617,6 +3757,9 @@ const AK_EYES  = '<path d="M327,242 L326,243 L324,243 L323,244 L322,244 L320,246
 
   function finish(){
     store.set("donePW", true);
+    // the lesson line, spoken as the end screen lands. The same point
+    // is written out on the screen underneath it.
+    if (window.Voice) window.Voice.play("pw-takeaway");
     show(
       '<div class="eyebrow">Vault &#183; all six held</div>' +
       '<h2>Long beats clever.</h2>' +
