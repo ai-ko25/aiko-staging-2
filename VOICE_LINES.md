@@ -12,14 +12,24 @@ is there so the take can be performed right, not just read.
 
 ## Before you generate anything
 
-**Use the same ElevenLabs voice as the existing 32 clips.** This is the one
-thing that cannot be fixed later. If Aiko sounds like a different creature
-between the main product and this build, the character breaks. Send me the
-voice ID and I will note it here so nobody has to guess next time.
+**The voice is decided and recorded.** All 45 clips below were generated on
+13 August 2026 with:
 
-Two of these already exist in the main product and can be copied straight
-across instead of regenerated: `intro-greeting.mp3` and `mission-complete.mp3`.
-That leaves 43 to make.
+| | |
+| --- | --- |
+| Voice | **Aiko - Trial 1** |
+| Voice ID | `aSnZCgQZDQBkk7weT1tf` |
+| Model | `eleven_multilingual_v2` |
+| Settings | stability 0.40, similarity 0.75, style 0.30, speaker boost on |
+| Seed | CRC32 of the filename, so any single clip regenerates identically |
+
+**Do not delete this voice from the ElevenLabs account.** It is a Voice Design
+generated voice. If it is deleted it cannot be recreated, not even from the
+same prompt, and all 45 clips would have to be remade in a different voice.
+
+The `aiko-staging` repo's manifest listed 32 clips but none were ever recorded,
+so there was no existing pack to match. This voice now sets Aiko for both
+builds.
 
 **Settings.** Eleven Multilingual v2, since Arabic is coming and switching
 models later would change the timbre. Stability around 40, similarity 75, style

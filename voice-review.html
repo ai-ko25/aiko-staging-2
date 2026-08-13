@@ -1,0 +1,86 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aiko voice pack review</title>
+<style>
+  :root{ --bg:#0C0920; --card:#171136; --ink:#EDE9FF; --dim:#9A93C4;
+         --amber:#FFC24B; --mint:#5FE3B0; }
+  *{box-sizing:border-box}
+  body{margin:0; padding:22px 16px 60px; background:var(--bg); color:var(--ink);
+       font:16px/1.55 ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+  .wrap{max-width:720px; margin:0 auto}
+  h1{font-size:24px; margin:0 0 6px}
+  .sub{color:var(--dim); margin:0 0 8px}
+  .meta{color:var(--dim); font-size:13px; margin:0 0 26px;
+        border-left:3px solid var(--amber); padding:10px 12px; background:rgba(255,194,75,.07)}
+  h2{font-size:15px; text-transform:uppercase; letter-spacing:.08em;
+     color:var(--amber); margin:34px 0 12px; font-weight:700}
+  .count{color:var(--dim); text-transform:none; letter-spacing:0; font-weight:400; font-size:13px}
+  .clip{background:var(--card); border-radius:14px; padding:14px 15px 12px; margin-bottom:12px}
+  .top{display:flex; align-items:center; gap:9px; margin-bottom:7px}
+  .num{color:var(--dim); font:600 12px ui-monospace,SFMono-Regular,Menlo,monospace}
+  code{color:var(--mint); font:12.5px ui-monospace,SFMono-Regular,Menlo,monospace;
+       background:rgba(95,227,176,.1); padding:2px 7px; border-radius:5px}
+  .line{margin:0 0 5px; font-size:17px}
+  .when{margin:0 0 11px; color:var(--dim); font-size:13px}
+  audio{width:100%; height:38px}
+  @media (prefers-color-scheme: light){ :root{ --bg:#0C0920 } }
+</style>
+<div class="wrap">
+<h1>Aiko voice pack</h1>
+<p class="sub">45 clips, English. Listen and note any filename that sounds wrong.</p>
+<p class="meta">Voice: <b>Aiko - Trial 1</b> (<code>aSnZCgQZDQBkk7weT1tf</code>), model
+eleven_multilingual_v2, stability 0.40, similarity 0.75, style 0.30.
+Total runtime 2 minutes 34 seconds. Any single clip can be regenerated on its
+own without changing the others.</p>
+<h2>A. Welcome and hub <span class="count">6 clips</span></h2>
+<div class="clip"><div class="top"><span class="num">01</span><code>welcome-hello.mp3</code></div><p class="line">Hi. I&#x27;m Aiko.</p><p class="when">Welcome screen, first words. Reuse intro-greeting.mp3 if it exists</p><audio controls preload="none" src="assets/voice/en/welcome-hello.mp3"></audio></div>
+<div class="clip"><div class="top"><span class="num">02</span><code>welcome-invite.mp3</code></div><p class="line">There are three jobs in here, and not one of them is boring. Come on.</p><p class="when">Welcome screen, straight after the greeting</p><audio controls preload="none" src="assets/voice/en/welcome-invite.mp3"></audio></div>
+<div class="clip"><div class="top"><span class="num">03</span><code>hub-pick.mp3</code></div><p class="line">Pick one. They are all completely different.</p><p class="when">Hub, first arrival</p><audio controls preload="none" src="assets/voice/en/hub-pick.mp3"></audio></div>
+<div class="clip"><div class="top"><span class="num">04</span><code>hub-locked.mp3</code></div><p class="line">Not that one yet. It is still cooking.</p><p class="when">Child taps a locked placeholder card</p><audio controls preload="none" src="assets/voice/en/hub-locked.mp3"></audio></div>
+<div class="clip"><div class="top"><span class="num">05</span><code>hub-back.mp3</code></div><p class="line">Back for another? Good.</p><p class="when">Returning to the hub after finishing a game</p><audio controls preload="none" src="assets/voice/en/hub-back.mp3"></audio></div>
+<div class="clip"><div class="top"><span class="num">06</span><code>hub-alldone.mp3</code></div><p class="line">You did all three. Genuinely, that was good.</p><p class="when">All three games complete</p><audio controls preload="none" src="assets/voice/en/hub-alldone.mp3"></audio></div>
+<h2>B. Night Shift <span class="count">12 clips</span></h2>
+<div class="clip"><div class="top"><span class="num">07</span><code>ns-tut-1.mp3</code></div><p class="line">Messages drop towards your inbox. Zap the sketchy ones before they land.</p><p class="when">Tutorial panel 1</p><audio controls preload="none" src="assets/voice/en/ns-tut-1.mp3"></audio></div>
+<div class="clip"><div class="top"><span class="num">08</span><code>ns-tut-2.mp3</code></div><p class="line">Your real friends drop too. Leave those alone. Let them land.</p><p class="when">Tutorial panel 2</p><audio controls preload="none" src="assets/voice/en/ns-tut-2.mp3"></audio></div>
+<div class="clip"><div class="top"><span class="num">09</span><code>ns-tut-3.mp3</code></div><p class="line">Here is the trick. Scary words are not the clue. Watch what the message asks you to do.</p><p class="when">Tutorial panel 3, the actual lesson</p><audio controls preload="none" src="assets/voice/en/ns-tut-3.mp3"></audio></div>
+<div class="clip"><div class="top"><span class="num">10</span><code>ns-start.mp3</code></div><p class="line">Night shift. You are on.</p><p class="when">Round begins</p><audio controls preload="none" src="assets/voice/en/ns-start.mp3"></audio></div>
+<div class="clip"><div class="top"><span class="num">11</span><code>ns-first-good.mp3</code></div><p class="line">That is it. That one wanted something off you.</p><p class="when">First correct zap of a round</p><audio controls preload="none" src="assets/voice/en/ns-first-good.mp3"></audio></div>
+<div class="clip"><div class="top"><span class="num">12</span><code>ns-first-bad.mp3</code></div><p class="line">Ah. That was a real friend. Read what it asks for, not how loud it is.</p><p class="when">First mistake of a round</p><audio controls preload="none" src="assets/voice/en/ns-first-bad.mp3"></audio></div>
+<div class="clip"><div class="top"><span class="num">13</span><code>ns-streak.mp3</code></div><p class="line">Okay. You are quick.</p><p class="when">Several correct in a row</p><audio controls preload="none" src="assets/voice/en/ns-streak.mp3"></audio></div>
+<div class="clip"><div class="top"><span class="num">14</span><code>ns-lastlife.mp3</code></div><p class="line">Careful now. One more slip and we are done.</p><p class="when">Down to the last life</p><audio controls preload="none" src="assets/voice/en/ns-lastlife.mp3"></audio></div>
+<div class="clip"><div class="top"><span class="num">15</span><code>ns-wave.mp3</code></div><p class="line">Wave down. They come faster from here.</p><p class="when">A wave is cleared</p><audio controls preload="none" src="assets/voice/en/ns-wave.mp3"></audio></div>
+<div class="clip"><div class="top"><span class="num">16</span><code>ns-win.mp3</code></div><p class="line">You held the whole night. Nothing got through.</p><p class="when">Game won</p><audio controls preload="none" src="assets/voice/en/ns-win.mp3"></audio></div>
+<div class="clip"><div class="top"><span class="num">17</span><code>ns-lose.mp3</code></div><p class="line">One got past us. Not the end of the world. Go again.</p><p class="when">Game lost</p><audio controls preload="none" src="assets/voice/en/ns-lose.mp3"></audio></div>
+<div class="clip"><div class="top"><span class="num">18</span><code>ns-takeaway.mp3</code></div><p class="line">Urgent, scary, or too good to be true. That is the pressure talking. Ask a grown-up before you tap.</p><p class="when">The lesson, on the end screen</p><audio controls preload="none" src="assets/voice/en/ns-takeaway.mp3"></audio></div>
+<h2>C. Breadcrumbs <span class="count">11 clips</span></h2>
+<div class="clip"><div class="top"><span class="num">19</span><code>fp-tut-1.mp3</code></div><p class="line">You are the stranger this time. You are reading someone&#x27;s posts. Tap anything that tells you something about them.</p><p class="when">Tutorial panel 1</p><audio controls preload="none" src="assets/voice/en/fp-tut-1.mp3"></audio></div>
+<div class="clip"><div class="top"><span class="num">20</span><code>fp-tut-2.mp3</code></div><p class="line">On their own these are nothing. Together they add up to a real person.</p><p class="when">Tutorial panel 2</p><audio controls preload="none" src="assets/voice/en/fp-tut-2.mp3"></audio></div>
+<div class="clip"><div class="top"><span class="num">21</span><code>fp-tut-3.mp3</code></div><p class="line">Then you go back and fix it. Deleting everything is not the goal. You score on how much you keep.</p><p class="when">Tutorial panel 3</p><audio controls preload="none" src="assets/voice/en/fp-tut-3.mp3"></audio></div>
+<div class="clip"><div class="top"><span class="num">22</span><code>fp-first-clue.mp3</code></div><p class="line">One down. Keep going, and look at the pictures too, not just the words.</p><p class="when">First clue found</p><audio controls preload="none" src="assets/voice/en/fp-first-clue.mp3"></audio></div>
+<div class="clip"><div class="top"><span class="num">23</span><code>fp-decoy.mp3</code></div><p class="line">Good try. That one tells me nothing though.</p><p class="when">Child taps a decoy</p><audio controls preload="none" src="assets/voice/en/fp-decoy.mp3"></audio></div>
+<div class="clip"><div class="top"><span class="num">24</span><code>fp-photo-hint.mp3</code></div><p class="line">Check the photo. People forget what is behind them.</p><p class="when">Stuck with only caption clues found</p><audio controls preload="none" src="assets/voice/en/fp-photo-hint.mp3"></audio></div>
+<div class="clip"><div class="top"><span class="num">25</span><code>fp-half.mp3</code></div><p class="line">Halfway. I can almost picture them.</p><p class="when">Four of eight found</p><audio controls preload="none" src="assets/voice/en/fp-half.mp3"></audio></div>
+<div class="clip"><div class="top"><span class="num">26</span><code>fp-allfound.mp3</code></div><p class="line">Eight. That is a name, a school, a street, and a face. From posts.</p><p class="when">All eight found</p><audio controls preload="none" src="assets/voice/en/fp-allfound.mp3"></audio></div>
+<div class="clip"><div class="top"><span class="num">27</span><code>fp-fix-start.mp3</code></div><p class="line">Now fix it. Keep as much as you can though. They are allowed a life.</p><p class="when">The repair phase begins</p><audio controls preload="none" src="assets/voice/en/fp-fix-start.mp3"></audio></div>
+<div class="clip"><div class="top"><span class="num">28</span><code>fp-overdelete.mp3</code></div><p class="line">You deleted nearly everything. Safe, yes. Also a bit sad.</p><p class="when">Child deletes almost every post</p><audio controls preload="none" src="assets/voice/en/fp-overdelete.mp3"></audio></div>
+<div class="clip"><div class="top"><span class="num">29</span><code>fp-takeaway.mp3</code></div><p class="line">No single post gave them away. All of them together did. That is the whole trick.</p><p class="when">The lesson, on the end screen</p><audio controls preload="none" src="assets/voice/en/fp-takeaway.mp3"></audio></div>
+<h2>D. Vault <span class="count">10 clips</span></h2>
+<div class="clip"><div class="top"><span class="num">30</span><code>pw-tut-1.mp3</code></div><p class="line">A machine is trying to crack your vault. The stronger your password, the slower it gets.</p><p class="when">Tutorial panel 1</p><audio controls preload="none" src="assets/voice/en/pw-tut-1.mp3"></audio></div>
+<div class="clip"><div class="top"><span class="num">31</span><code>pw-tut-2.mp3</code></div><p class="line">Tap a word to add it. Random words slow it right down. Things about you barely help.</p><p class="when">Tutorial panel 2</p><audio controls preload="none" src="assets/voice/en/pw-tut-2.mp3"></audio></div>
+<div class="clip"><div class="top"><span class="num">32</span><code>pw-personal.mp3</code></div><p class="line">Your dog&#x27;s name? The machine guessed that one first.</p><p class="when">Child adds a personal word</p><audio controls preload="none" src="assets/voice/en/pw-personal.mp3"></audio></div>
+<div class="clip"><div class="top"><span class="num">33</span><code>pw-random.mp3</code></div><p class="line">Now that, it did not see coming.</p><p class="when">Child adds a random word</p><audio controls preload="none" src="assets/voice/en/pw-random.mp3"></audio></div>
+<div class="clip"><div class="top"><span class="num">34</span><code>pw-long.mp3</code></div><p class="line">Longer is better. Boringly, that is most of the secret.</p><p class="when">Password passes a good length</p><audio controls preload="none" src="assets/voice/en/pw-long.mp3"></audio></div>
+<div class="clip"><div class="top"><span class="num">35</span><code>pw-close.mp3</code></div><p class="line">It is nearly through. Give me something strange.</p><p class="when">Cracker close to breaking in</p><audio controls preload="none" src="assets/voice/en/pw-close.mp3"></audio></div>
+<div class="clip"><div class="top"><span class="num">36</span><code>pw-held.mp3</code></div><p class="line">Held. Look how slowly it moved.</p><p class="when">A vault survives</p><audio controls preload="none" src="assets/voice/en/pw-held.mp3"></audio></div>
+<div class="clip"><div class="top"><span class="num">37</span><code>pw-level.mp3</code></div><p class="line">Vault holds. The next one is tougher.</p><p class="when">Level cleared</p><audio controls preload="none" src="assets/voice/en/pw-level.mp3"></audio></div>
+<div class="clip"><div class="top"><span class="num">38</span><code>pw-win.mp3</code></div><p class="line">Every vault held. That machine is going home.</p><p class="when">Game won. Or reuse mission-complete.mp3</p><audio controls preload="none" src="assets/voice/en/pw-win.mp3"></audio></div>
+<div class="clip"><div class="top"><span class="num">39</span><code>pw-takeaway.mp3</code></div><p class="line">Long and random beats short and clever. And never the same one twice.</p><p class="when">The lesson, on the end screen</p><audio controls preload="none" src="assets/voice/en/pw-takeaway.mp3"></audio></div>
+<h2>E. Nudges <span class="count">6 clips</span></h2>
+<div class="clip"><div class="top"><span class="num">40</span><code>nudge-1.mp3</code></div><p class="line">Still there?</p><p class="when">Idle, first nudge</p><audio controls preload="none" src="assets/voice/en/nudge-1.mp3"></audio></div>
+<div class="clip"><div class="top"><span class="num">41</span><code>nudge-2.mp3</code></div><p class="line">Want a hand, or are you thinking?</p><p class="when">Idle, second nudge</p><audio controls preload="none" src="assets/voice/en/nudge-2.mp3"></audio></div>
+<div class="clip"><div class="top"><span class="num">42</span><code>nudge-3.mp3</code></div><p class="line">Take your time. I am not going anywhere.</p><p class="when">Idle, third nudge</p><audio controls preload="none" src="assets/voice/en/nudge-3.mp3"></audio></div>
+<div class="clip"><div class="top"><span class="num">43</span><code>nudge-4.mp3</code></div><p class="line">Try tapping one and see what happens.</p><p class="when">Idle, still nothing after three</p><audio controls preload="none" src="assets/voice/en/nudge-4.mp3"></audio></div>
+<div class="clip"><div class="top"><span class="num">44</span><code>nudge-wrong-1.mp3</code></div><p class="line">Not there. Warmer towards the middle.</p><p class="when">Tapping dead space</p><audio controls preload="none" src="assets/voice/en/nudge-wrong-1.mp3"></audio></div>
+<div class="clip"><div class="top"><span class="num">45</span><code>nudge-wrong-2.mp3</code></div><p class="line">Nothing there. Somewhere else.</p><p class="when">Tapping dead space again</p><audio controls preload="none" src="assets/voice/en/nudge-wrong-2.mp3"></audio></div>
+</div>
